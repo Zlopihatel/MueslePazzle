@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="Пазл с монетами, подсказками и саботажем – собери картинку и заработай">
+    <meta name="keywords" content="Puzzle,JavaScript,HTML,CSS3,игра,монеты">
+    <meta name="author" content="Your Puzzle Party">
+    <title>🌸 Puzzle Party – розовый пазл с монетками</title>
+    
+    <!-- Иконки (оставлены оригинальные пути, проверьте наличие папки img/icons) -->
+    <link rel="shortcut icon" href="img/icons/favicon.ico" type="image/x-icon"/>
+    <link rel="apple-touch-icon" sizes="57x57" href="img/icons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="img/icons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="img/icons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="img/icons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="img/icons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="img/icons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="img/icons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="img/icons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="img/icons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="img/icons/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="img/icons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="img/icons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="img/icons/android-chrome-192x192.png" sizes="192x192">
+    <meta name="msapplication-square70x70logo" content="img/icons/smalltile.png"/>
+    <meta name="msapplication-square150x150logo" content="img/icons/mediumtile.png"/>
+    <meta name="msapplication-wide310x150logo" content="img/icons/widetile.png"/>
+    <meta name="msapplication-square310x310logo" content="img/icons/largetile.png"/>
+
+    <!-- Наши розовые стили (без Bootstrap) -->
+    <link href="css/styles.css" rel="stylesheet">
+    <!-- Дополнительные стили для анимации тряски и рейтинга -->
+    <style>
+        /* гарантия розовой темы, если styles.css не загрузился */
+        body {
+            background: linear-gradient(145deg, #ffdfe8 0%, #ffc0d0 100%);
+            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, 'Poppins', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .puzzle-app, .puzzle-wrapper {
+            max-width: 1400px;
+            width: 100%;
+        }
+        .game-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffeef4;
+            padding: 15px 20px;
+            border-radius: 48px;
+            margin-bottom: 24px;
+            box-shadow: 0 5px 12px rgba(255,80,120,0.2);
+        }
+        .file-area {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .pink-button {
+            background: #ff99bb;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .pink-button:hover {
+            background: #ff7aa8;
+            transform: scale(0.97);
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+            background: #ffd9e4;
+            padding: 8px 20px;
+            border-radius: 48px;
+            align-items: center;
+        }
+        .coins {
+            background: #ffd966;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-weight: bold;
+        }
+        .puzzle-wrapper {
+            background: #ffeef4;
+            border-radius: 48px;
+            padding: 12px;
+            box-shadow: inset 0 0 0 2px white, 0 12px 24px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #ffefdc;
+            border-radius: 32px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: grab;
+        }
+        canvas:active {
+            cursor: grabbing;
+        }
+        .right-panel {
+            background: #fff0f5;
+            border-radius: 40px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 8px 20px rgba(255,80,120,0.2);
+            margin-top: 10px;
+        }
+        .rating-box h3 {
+            margin: 0 0 12px 0;
+            color: #b82b5e;
+            font-size: 1.4rem;
+        }
+        .rating-list {
+            max-height: 280px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+        .rating-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 6px;
+            border-bottom: 1px solid #ffbfd0;
+            font-weight: 500;
+        }
+        .name-edit {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: #ffdae6;
+            padding: 8px 12px;
+            border-radius: 48px;
+            margin-bottom: 12px;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .shake {
+            animation: shakeAnim 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+        @keyframes shakeAnim {
+            0% { transform: translate(0,0) rotate(0deg); }
+            20% { transform: translate(-8px,2px) rotate(-1deg); }
+            40% { transform: translate(8px,-3px) rotate(1deg); }
+            60% { transform: translate(-4px,1px) rotate(0deg); }
+            80% { transform: translate(4px,-1px) rotate(0deg); }
+            100% { transform: translate(0,0) rotate(0); }
+        }
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .game-controls { flex-direction: column; align-items: stretch; }
+            .stats { justify-content: center; }
+        }
+        h1 {
+            text-align: center;
+            color: #b82b5e;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- удалён onload="init(4)" – инициализация через window.onload в puzzle.js -->
+    <div style="max-width: 1200px; width: 100%; margin: 0 auto;">
+        <h1>🧩 Puzzle Party – собирай пазл, получай монеты 💰</h1>
+        
+        <div class="game-controls">
+            <div class="file-area">
+                <input type="file" id="imageUpload" accept="image/*" style="display:none">
+                <button id="uploadBtn" class="pink-button">📸 Загрузить свою картинку</button>
+                <select id="difficultySelect">
+                    <option value="4">4x4 (16 фрагментов)</option>
+                    <option value="6">6x6 (36)</option>
+                    <option value="8">8x8 (64)</option>
+                    <option value="10" selected>10x10 (100) — рекомендуется</option>
+                    <option value="12">12x12 (144)</option>
+                    <option value="15">15x15 (225)</option>
+                    <option value="20">20x20 (400)</option>
+                </select>
+                <button id="resetBtn" class="pink-button">🔄 Новая игра</button>
+            </div>
+            <div class="stats">
+                <div class="coins">💰 <span id="coinBalance">100</span></div>
+                <div>🧩 Собрано: <span id="puzzlesCompleted">0</span></div>
+            </div>
+        </div>
+        
+        <div class="puzzle-wrapper">
+            <canvas id="canvas"></canvas>
+        </div>
+        
+        <div class="right-panel">
+            <div class="rating-box">
+                <h3>🏆 Рейтинг игроков</h3>
+                <div class="name-edit">
+                    <input type="text" id="playerName" maxlength="16" placeholder="Ваше имя" value="Гость">
+                    <button id="renameBtn" class="pink-button">✅ Сменить имя</button>
+                </div>
+                <div id="ratingList" class="rating-list">
+                    <!-- динамический рейтинг -->
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button id="hintBtn" class="pink-button">💡 Подсказка (5💰)</button>
+                <button id="sabotageBtn" class="pink-button">💥 Саботаж (10💰)</button>
+            </div>
+            <div style="font-size:12px; text-align:center; color:#c04e6f;">
+                ⭐ Кликни на фрагмент → перетащи его на место<br>
+                💰 Монетки при саботаже — кликай на них!
+            </div>
+        </div>
+    </div>
+    
+    <!-- Подключаем наш модифицированный puzzle.js (без jQuery и Bootstrap) -->
+    <script type="text/javascript" src="js/puzzle.js"></script>
+</body>
+</html>

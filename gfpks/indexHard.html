@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>🌸 Puzzle Party – пазл с монетами</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body {
+            background: linear-gradient(145deg, #ffdfe8 0%, #ffc0d0 100%);
+            font-family: 'Segoe UI', 'Quicksand', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container { max-width: 1300px; width: 100%; }
+        h1 { text-align: center; color: #b82b5e; margin-bottom: 20px; font-size: 1.8rem; }
+        .game-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffeef4;
+            padding: 15px 20px;
+            border-radius: 48px;
+            margin-bottom: 24px;
+            box-shadow: 0 5px 12px rgba(255,80,120,0.2);
+        }
+        .file-area { display: flex; gap: 12px; flex-wrap: wrap; }
+        .pink-button {
+            background: #ff99bb;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 60px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .pink-button:hover { background: #ff7aa8; transform: scale(0.97); }
+        .stats { display: flex; gap: 20px; background: #ffd9e4; padding: 8px 20px; border-radius: 48px; }
+        .coins { background: #ffd966; padding: 5px 14px; border-radius: 40px; font-weight: bold; }
+        .puzzle-wrapper {
+            background: #ffeef4;
+            border-radius: 48px;
+            padding: 12px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 0 2px white, 0 12px 24px rgba(0,0,0,0.1);
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: #ffefdc;
+            border-radius: 32px;
+            cursor: grab;
+        }
+        canvas:active { cursor: grabbing; }
+        .right-panel {
+            background: #fff0f5;
+            border-radius: 40px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .rating-box h3 { color: #b82b5e; margin-bottom: 12px; }
+        .rating-list { max-height: 280px; overflow-y: auto; }
+        .rating-item { display: flex; justify-content: space-between; padding: 8px 6px; border-bottom: 1px solid #ffbfd0; }
+        .name-edit { display: flex; gap: 10px; background: #ffdae6; padding: 8px 12px; border-radius: 48px; margin-bottom: 12px; }
+        .action-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .shake { animation: shakeAnim 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+        @keyframes shakeAnim {
+            0% { transform: translate(0,0) rotate(0deg); }
+            20% { transform: translate(-8px,2px) rotate(-1deg); }
+            40% { transform: translate(8px,-3px) rotate(1deg); }
+            60% { transform: translate(-4px,1px) rotate(0deg); }
+            80% { transform: translate(4px,-1px) rotate(0deg); }
+            100% { transform: translate(0,0) rotate(0); }
+        }
+        @media (max-width: 768px) { .game-controls { flex-direction: column; align-items: stretch; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🧩 Puzzle Party – собирай и зарабатывай 💰</h1>
+    <div class="game-controls">
+        <div class="file-area">
+            <input type="file" id="imageUpload" accept="image/*" style="display:none">
+            <button id="uploadBtn" class="pink-button">📸 Загрузить картинку</button>
+            <select id="difficultySelect">
+                <option value="4">4x4 (16)</option><option value="6">6x6 (36)</option>
+                <option value="8">8x8 (64)</option><option value="10" selected>10x10 (100)</option>
+                <option value="12">12x12 (144)</option><option value="15">15x15 (225)</option>
+                <option value="20">20x20 (400)</option>
+            </select>
+            <button id="resetBtn" class="pink-button">🔄 Новая игра</button>
+        </div>
+        <div class="stats">
+            <div class="coins">💰 <span id="coinBalance">100</span></div>
+            <div>🧩 Собрано: <span id="puzzlesCompleted">0</span></div>
+        </div>
+    </div>
+    <div class="puzzle-wrapper">
+        <canvas id="canvas"></canvas>
+    </div>
+    <div class="right-panel">
+        <div class="rating-box">
+            <h3>🏆 Рейтинг</h3>
+            <div class="name-edit">
+                <input type="text" id="playerName" maxlength="16" value="Гость">
+                <button id="renameBtn" class="pink-button">✅</button>
+            </div>
+            <div id="ratingList" class="rating-list"></div>
+        </div>
+        <div class="action-buttons">
+            <button id="hintBtn" class="pink-button">💡 Подсказка (5💰)</button>
+            <button id="sabotageBtn" class="pink-button">💥 Саботаж (10💰)</button>
+        </div>
+        <div style="font-size:12px; text-align:center;">⭐ Перетаскивай фрагменты, получай монеты</div>
+    </div>
+</div>
+<script src="js/puzzle.js"></script>
+</body>
+</html>
